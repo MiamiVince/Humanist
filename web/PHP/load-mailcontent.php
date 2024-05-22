@@ -179,6 +179,7 @@
         }
         
         if (chartStatus){
+            
             for (var i = 0; i < new_array.length; i++) {
                 var x = new_array[i]
                 for (var j = 0; j < dataGraphMails.length; j++) {
@@ -291,6 +292,7 @@
             }
              return dataGraphMails;
         } else{
+            var check = []
             for (var i = 0; i < new_array.length; i++) {
                 var x = new_array[i]
                 for (var j = 0; j < dataGraphZones.length; j++) {
@@ -325,8 +327,14 @@
                             case "-0400":
                             dataGraphZones[8] += 1;
                             break;
+                            case "-0330":
+                            dataGraphZones[9] += 1;
+                            break;
                             case "-0300":
                             dataGraphZones[9] += 1;
+                            break;
+                            case "-0230":
+                            dataGraphZones[10] += 1;
                             break;
                             case "-0200":
                             dataGraphZones[10] += 1;
@@ -354,6 +362,9 @@
                             case "+0500":
                             dataGraphZones[17] += 1;
                             break;
+                            case "+0530":
+                            dataGraphZones[17] += 1;
+                            break;
                             case "+0600":
                             dataGraphZones[18] += 1;
                             break;
@@ -369,19 +380,27 @@
                             case "+1000":
                             dataGraphZones[22] += 1;
                             break;
+                            case "+1030":
+                            dataGraphZones[22] += 1;
+                            break;
                             case "+1100":
                             dataGraphZones[23] += 1;
                             break;
                             case "+1200":
                             dataGraphZones[24] += 1;
                             break;
+                            case "+1300":
+                            dataGraphZones[24] += 1;
+                            break;
                             default:
+                            check.push(x);
                             break;
                         }
                     }
                     break;
                 }
             }
+            console.log(check);
             return dataGraphZones;
         }
     }
@@ -395,7 +414,6 @@ function destroyGraph(){
 function drawGraph(){
 
     var dataGraph = getData(arrayData, chartStatus);
-    console.log(dataGraph);
     var labels;
 
     if (chartStatus){
