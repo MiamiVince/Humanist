@@ -1,106 +1,142 @@
 <?php
     include 'dbh.php';
     $result ="";
-    $graphStatus = True;
     if (isset($_POST['submit'])) {
         $freeText = $_POST['freeText'];
         $fromYear = $_POST['fromYear'];
         $toYear = $_POST['toYear'];
         $category = $_POST['category'];
-        //$someOther = $_POST['someOther'];
-        //$select = $_POST['select'];
+        $radio = $_POST['radio'];
+        $id = 0;
 
-        if ((empty($freeText)) & ($fromYear == "Select Year") & ($toYear == "Select Year") & ($category == "timezones")) {
-            //echo "There is no search result!";
-            //$sql = "SELECT * FROM emailarchives5 WHERE mailYear='default'";
-            $sql = "SELECT * FROM emailarchives5";
-            $result = mysqli_query($conn, $sql);
-            $graphData = array();
+
+        if ($radio == "radioYears"){
+            $graphStatus = True;
+        } else {
             $graphStatus = False;
-            $id = 0;
         }
 
-        if ((empty($freeText)) & !($fromYear == "Select Year") & ($toYear == "Select Year") & ($category == "timezones")) {
-            //echo "There is no search result!";
-            //$sql = "SELECT * FROM emailarchives5 WHERE mailYear='default'";
-            $sql = "SELECT * FROM emailarchives5 WHERE mailYear='$fromYear'";
-            $result = mysqli_query($conn, $sql);
-            $graphData = array();
-            $graphStatus = False;
-            $id = 0;
+        //Check User Form Input
+        if ($category == "Select Category"){
+                //No Input
+            if ((empty($freeText)) & ($fromYear == "Select Year") & ($toYear == "Select Year") & ($category == "Select Category")) {
+                $sql = "SELECT * FROM humanistreaserchdata WHERE mailYear='default'";
+                $result = mysqli_query($conn, $sql);
+            }
+
+                //Just Free Text
+            if (!(empty($freeText)) & ($fromYear == "Select Year") & ($toYear == "Select Year") & ($category == "Select Category")) {
+                $sql = "SELECT * FROM humanistreaserchdata WHERE mailContent LIKE '%$freeText%'";
+                $result = mysqli_query($conn, $sql);
+            }
+            
+                //Just From Year
+            if ((empty($freeText)) & !($fromYear == "Select Year") & ($toYear == "Select Year") & ($category == "Select Category")) {
+                $sql = "SELECT * FROM humanistreaserchdata WHERE mailYear='$fromYear'";
+                $result = mysqli_query($conn, $sql);
+            }
+                //From Year -> To Year
+            if ((empty($freeText)) & !($fromYear == "Select Year") & !($toYear == "Select Year") & ($category == "Select Category")) {
+                //echo "There is no search result!";
+                //$sql = "SELECT * FROM humanistreaserchdata WHERE mailYear='default'";
+                $sql = "SELECT * FROM humanistreaserchdata WHERE mailYear BETWEEN $fromYear AND $toYear";
+                $result = mysqli_query($conn, $sql);
+            }
+                //Free Text | From Year -> To Year
+            if (!(empty($freeText)) & !($fromYear == "Select Year") & !($toYear == "Select Year") & ($category == "Select Category")) {
+                $sql = "SELECT * FROM humanistreaserchdata WHERE mailContent LIKE '%$freeText%' AND mailYear BETWEEN $fromYear AND $toYear";
+                $result = mysqli_query($conn, $sql);
+            }
+                //Just To Year
+                //Therefore, no query is executed.
+            if ((empty($freeText)) & ($fromYear == "Select Year") & !($toYear == "Select Year") & ($category == "Select Category")) {
+                echo 'Please select "From Year" for search results!';
+                $sql = "SELECT * FROM humanistreaserchdata WHERE mailDate='default'";
+                $result = mysqli_query($conn, $sql);
+            }
+                //Just From Year
+            if ((empty($freeText)) & !($fromYear == "Select Year") & ($toYear == "Select Year") & ($category == "Select Category")) {
+                $sql = "SELECT * FROM humanistreaserchdata WHERE mailYear='$fromYear'";
+                $result = mysqli_query($conn, $sql);
+            }
+                //Free Text | From Year
+                //The query searches for all email data that can be assigned to the corresponding year and text input.
+            if (!(empty($freeText)) & !($fromYear == "Select Year") & ($toYear == "Select Year") & ($category == "Select Category")) {
+                $sql = "SELECT * FROM humanistreaserchdata WHERE mailContent LIKE '%$freeText%' AND mailYear='$fromYear'";
+                $result = mysqli_query($conn, $sql);
+            }
+                //Free Text | To Year
+                //Therefore, no query is executed.
+            if (!(empty($freeText)) & ($fromYear == "Select Year") & !($toYear == "Select Year") & ($category == "Select Category")) {
+                echo 'Please select "From Year" for search results!';
+                $sql = "SELECT * FROM humanistreaserchdata WHERE mailYear='default'";
+                $result = mysqli_query($conn, $sql);
+            }
         }
 
-        if ((empty($freeText)) & !($fromYear == "Select Year") & !($toYear == "Select Year") & ($category == "timezones")) {
-            //echo "There is no search result!";
-            //$sql = "SELECT * FROM emailarchives5 WHERE mailYear='default'";
-            $sql = "SELECT * FROM emailarchives5 WHERE mailYear BETWEEN $fromYear AND $toYear";
-            $result = mysqli_query($conn, $sql);
-            $graphData = array();
-            $graphStatus = False;
-            $id = 0;
+        if ($category != "Select Category"){
+                //Just Free Text | Category
+            if (!(empty($freeText)) & ($fromYear == "Select Year") & ($toYear == "Select Year")) {
+                $sql = "SELECT * FROM humanistreaserchdata WHERE (mailContent LIKE '%$freeText%') AND (mailContentCategory lIKE '$category')";
+                $result = mysqli_query($conn, $sql);
+            }
+            
+                //Just From Year | category
+            if ((empty($freeText)) & !($fromYear == "Select Year") & ($toYear == "Select Year")) {
+                $sql = "SELECT * FROM humanistreaserchdata WHERE (mailYear='$fromYear') AND (mailContentCategory LIKE '$category')";
+                $result = mysqli_query($conn, $sql);
+            }
+                //From Year -> To Year | category
+            if ((empty($freeText)) & !($fromYear == "Select Year") & !($toYear == "Select Year")) {
+                //echo "There is no search result!";
+                //$sql = "SELECT * FROM humanistreaserchdata WHERE mailYear='default'";
+                $sql = "SELECT * FROM humanistreaserchdata WHERE (mailYear BETWEEN $fromYear AND $toYear) AND (mailContentCategory LIKE '$category')";
+                $result = mysqli_query($conn, $sql);
+            }
+                //Free Text | From Year -> To Year | category
+            if (!(empty($freeText)) & !($fromYear == "Select Year") & !($toYear == "Select Year")) {
+                $sql = "SELECT * FROM humanistreaserchdata WHERE (mailContent LIKE '%$freeText%') AND (mailYear BETWEEN $fromYear AND $toYear) AND (mailContentCategory LIKE '$category')";
+                $result = mysqli_query($conn, $sql);
+            }
+                //Just To Year | category
+                //Therefore, no query is executed.
+            if ((empty($freeText)) & ($fromYear == "Select Year") & !($toYear == "Select Year")) {
+                echo 'Please select "From Year" for search results!';
+                $sql = "SELECT * FROM humanistreaserchdata WHERE mailDate='default'";
+                $result = mysqli_query($conn, $sql);
+            }
+                //Just From Year | category
+            if ((empty($freeText)) & !($fromYear == "Select Year") & ($toYear == "Select Year")) {
+                $sql = "SELECT * FROM humanistreaserchdata WHERE (mailYear='$fromYear') AND (mailContentCategory LIKE '$category')";
+                $result = mysqli_query($conn, $sql);
+            }
+                //Free Text | From Year | category
+                //The query searches for all email data that can be assigned to the corresponding year, text input and category.
+            if (!(empty($freeText)) & !($fromYear == "Select Year") & ($toYear == "Select Year")) {
+                $sql = "SELECT * FROM humanistreaserchdata WHERE (mailContent LIKE '%$freeText%') AND (mailYear='$fromYear') AND (mailContentCategory LIKE '$category')";
+                $result = mysqli_query($conn, $sql);
+            }
+                //Free Text | To Year | category
+                //Therefore, no query is executed.
+            if (!(empty($freeText)) & ($fromYear == "Select Year") & !($toYear == "Select Year")) {
+                echo 'Please select "From Year" for search results!';
+                $sql = "SELECT * FROM humanistreaserchdata WHERE mailYear='default'";
+                $result = mysqli_query($conn, $sql);
+            }
         }
 
-        if (!(empty($freeText)) & !($fromYear == "Select Year") & !($toYear == "Select Year") & ($category == "timezones")) {
-            //echo "There is no search result!";
-            //$sql = "SELECT * FROM emailarchives5 WHERE mailYear='default'";
-            $sql = "SELECT * FROM emailarchives5 WHERE mailContent LIKE '%$freeText%' AND mailYear BETWEEN $fromYear AND $toYear";
-            $result = mysqli_query($conn, $sql);
-            $graphData = array();
-            $graphStatus = False;
-            $id = 0;
-        }
-
-        if ((empty($freeText)) & ($fromYear == "Select Year") & ($toYear == "Select Year") & ($category == "Select Category")) {
-            //echo "There is no search result!";
-            $sql = "SELECT * FROM emailarchives5 WHERE mailYear='default'";
-            $result = mysqli_query($conn, $sql);
-        }
-
-        if ((empty($freeText)) & ($fromYear == "Select Year") & !($toYear == "Select Year")) {
-            echo 'Please select "From Year" for search results!';
-            $sql = "SELECT * FROM emailarchives5 WHERE mailDate='default'";
-            $result = mysqli_query($conn, $sql);
-        }
-
-        if ((empty($freeText)) & !($fromYear == "Select Year") & ($toYear == "Select Year")) {
-            $sql = "SELECT * FROM emailarchives5 WHERE mailYear='$fromYear'";
-            $result = mysqli_query($conn, $sql);
-            $graphData = array();
-            $id = 0;
-        }
-
-        if ((empty($freeText)) & !($fromYear == "Select Year") & !($toYear == "Select Year")) {
-            $sql = "SELECT * FROM emailarchives5 WHERE mailYear BETWEEN $fromYear AND $toYear";
-            $result = mysqli_query($conn, $sql);
-            $graphData = array();
-            $id = 0;
-        }
-
-        if (!(empty($freeText)) & !($fromYear == "Select Year") & !($toYear == "Select Year")) {
-            $sql = "SELECT * FROM emailarchives5 WHERE mailContent LIKE '%$freeText%' AND mailYear BETWEEN $fromYear AND $toYear";
-            $result = mysqli_query($conn, $sql);
-            $graphData = array();
-            $id = 0;
-        }
-
-        if (!(empty($freeText)) & !($fromYear == "Select Year") & ($toYear == "Select Year")) {
-            $sql = "SELECT * FROM emailarchives5 WHERE mailContent LIKE '%$freeText%' AND mailYear='$fromYear'";
-            $result = mysqli_query($conn, $sql);
-            $graphData = array();
-            $id = 0;
-        }
-
-        if (!(empty($freeText)) & ($fromYear == "Select Year") & !($toYear == "Select Year")) {
-            echo 'Please select "From Year" for search results!';
-            $sql = "SELECT * FROM emailarchives5 WHERE mailYear='default'";
-            $result = mysqli_query($conn, $sql);
-        }
-
+        $graphData = array();
         $count = 0;
-        if (mysqli_num_rows($result) > 0) {
+        $emailsNum = mysqli_num_rows($result);
+
+        if ($emailsNum > 0) {
+
+            echo '<div class="p-4 mb-3 bg-body-tertiary rounded">
+                    <p >Your search has returned a total of '.$emailsNum.' E-Mails.</p>
+                </div>';
+
             while ($row = mysqli_fetch_assoc($result))
                 {
-                    $id = $id +1;
                     if($graphStatus){
                         $graphData[]= $row['mailYear'];
                     }else{
@@ -109,12 +145,18 @@
 
                     if ($row['id'] != ""){
                         $count = $count +1;
+                        $id = $row['id'];
                     }
-                    if ($count <= 25){    //1989 -> 2021 | 1990 -> 1535
-                        echo '<button class="btn btn-primary btn-sm" <a href="#hiddenTextBootstrap'.$id.'" data-bs-toggle="collapse">Email Header<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1"/>
-                        </svg></a></button>';
-                        
+                    if ($count <= 10){    //1989 -> 2021 | 1990 -> 1535
+                        //echo '<button class="btn btn-primary btn-sm" <a href="#hiddenTextBootstrap'.$id.'" data-bs-toggle="collapse">Email Header <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                        //<path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1"/>
+                        //</svg></a></button>';
+
+                        echo    '<button class="btn btn-primary btn-sm" type="button" data-toggle="collapse" data-target="#hiddenTextBootstrap'.$id.'" aria-expanded="false" aria-controls="hiddenTextBootstrap'.$id.'">
+                                    Email Header <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1"/>
+                                    </svg>
+                                </button>';
                         echo '<div class="collapse" id="hiddenTextBootstrap'.$id.'">';
                         echo "<p>";
                         echo $row['mailHeader_content'];
@@ -126,7 +168,7 @@
                         echo "<br>";
                         echo "Subject: ".$row['mailSubject'];
                         echo "<br>";
-                        echo "Year: ".$row['mailYear'];
+                        echo "Year: ".$row['mailDate'];
                         echo "</p>";
                         echo "<br>";
                         echo "<p>";
@@ -135,9 +177,19 @@
                     }    
                     
                 }
+
+            echo '
+                <div class="p-2 mb-3 bg-body-tertiary rounded">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item"><a class="page-link">0 - 10 E-Mails</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                </div>';
             
             $graphData = json_encode([$graphData]);
-            echo $graphData;
         } else {
             echo "<br>";
             echo "There is no search result!";

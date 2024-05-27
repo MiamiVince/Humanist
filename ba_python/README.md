@@ -11,9 +11,3 @@ Set-ExecutionPolicy Unrestricted -Scope Process
 ```
 python -m pip install -r requirements.txt
 ```
-
-
-
-Kategorien:
-Ort
-Sprache?
