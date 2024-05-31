@@ -1,12 +1,14 @@
 <?php
     include 'dbh.php';
     $result ="";
+    $graphLabel ="";
     if (isset($_POST['submit'])) {
         $freeText = $_POST['freeText'];
         $fromYear = $_POST['fromYear'];
         $toYear = $_POST['toYear'];
         $category = $_POST['category'];
         $radio = $_POST['radio'];
+        $pgNum = $_POST['pgNum'];
         $id = 0;
 
 
@@ -14,6 +16,19 @@
             $graphStatus = True;
         } else {
             $graphStatus = False;
+        }
+
+        if (!(empty($freeText))){
+            $graphLabel = $freeText;
+        }
+        if ((empty($freeText)) & ($category != "Select Category")){
+            $graphLabel = $category;
+        }
+        if ((empty($freeText)) & ($category == "Select Category") & !($fromYear == "Select Year") & ($toYear == "Select Year")){
+            $graphLabel = $fromYear;
+        }
+        if ((empty($freeText)) & ($category == "Select Category") & !($fromYear == "Select Year") & !($toYear == "Select Year")){
+            $graphLabel = $fromYear." - ".$toYear;
         }
 
         //Check User Form Input
@@ -147,17 +162,17 @@
                         $count = $count +1;
                         $id = $row['id'];
                     }
-                    if ($count <= 10){    //1989 -> 2021 | 1990 -> 1535
+                    if (($count >= ($pgNum)) & ($count <= ($pgNum + 10))){    //1989 -> 2021 | 1990 -> 1535
                         //echo '<button class="btn btn-primary btn-sm" <a href="#hiddenTextBootstrap'.$id.'" data-bs-toggle="collapse">Email Header <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
                         //<path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1"/>
                         //</svg></a></button>';
 
-                        echo    '<button class="btn btn-primary btn-sm" type="button" data-toggle="collapse" data-target="#hiddenTextBootstrap'.$id.'" aria-expanded="false" aria-controls="hiddenTextBootstrap'.$id.'">
-                                    Email Header <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1"/>
-                                    </svg>
-                                </button>';
-                        echo '<div class="collapse" id="hiddenTextBootstrap'.$id.'">';
+                        echo '<button class="btn btn-primary btn-sm" type="button" data-toggle="collapse" data-target="#id'.$id.'" aria-expanded="false" aria-controls="id'.$id.'">
+                            Email Header <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+                            </svg>
+                            </button>';
+                        echo '<div class="collapse" id="id'.$id.'">';
                         echo "<p>";
                         echo $row['mailHeader_content'];
                         echo "</p>";
@@ -179,15 +194,17 @@
                 }
 
             echo '
-                <div class="p-2 mb-3 bg-body-tertiary rounded">
+                <div class="p-2 mb-3 bg-body-tertiary rounded" id="pagination">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-center">
-                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                        <li class="page-item"><a class="page-link">0 - 10 E-Mails</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        <li class="page-item"><button class="page-link" id="previous">Previous</button></li>
+                        <li class="page-item"><a class="page-link">'.$pgNum.' - '.($pgNum + 10).' E-Mails</a></li>
+                        <li class="page-item"><button class="page-link" id="next">Next</button></li>
                         </ul>
                     </nav>
                 </div>';
+
+            echo '<script src="../JS/ajax.js"></script>';
             
             $graphData = json_encode([$graphData]);
         } else {
@@ -203,10 +220,10 @@
     
     var myLineChart;
     var chartStatus =  '<?php echo $graphStatus; ?>';
-        var arrayData= '<?php echo $graphData; ?>';
+    var arrayData = '<?php echo $graphData; ?>';
+    var graphLabel = '<?php echo $graphLabel; ?>';
     
 
-    console.log(arrayData);
 
     function getData(array, status) {
         
@@ -452,7 +469,6 @@
                     break;
                 }
             }
-            console.log(check);
             return dataGraphZones;
         }
     }
@@ -485,18 +501,9 @@ function drawGraph(){
         
         labels: labels,
         datasets: [{
-            label: '# 1',
+            label: graphLabel,
             
             data: dataGraph,
-            borderWidth: 1,
-            tension: 0.4,
-            fill: true
-            
-        },
-        {
-            label: '# 2',
-            
-            data: [], //620,456,2689,3282,2535,1669,1393,990,838,817,1445,1037,1092,1114,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
             borderWidth: 1,
             tension: 0.4,
             fill: true

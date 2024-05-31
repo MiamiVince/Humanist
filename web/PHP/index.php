@@ -22,14 +22,14 @@
   <div class="container">
     <header class="border-bottom lh-1 py-3">
       <div class="col-12 text-center">
-        <a class="blog-header-logo text-body-emphasis text-decoration-none" href="index.php">HUMANIST Reaserch</a>
+        <a class="blog-header-logo text-body-emphasis text-decoration-none" href="index.php">HUMANIST Rsearch</a>
       </div>
     </header>
 
       <!--NavBar-->
     <div class="nav-scroller py-1 mb-3 border-bottom">
       <nav class="nav nav-underline justify-content-left">
-        <a class="nav-item nav-link link-body-emphasis active" href="index.php">Reasearch</a>
+        <a class="nav-item nav-link link-body-emphasis active" href="index.php">Research</a>
         <a class="nav-item nav-link link-body-emphasis" href="https://dhhumanist.org/">Archives</a>
       </nav>
     </div>
@@ -40,7 +40,7 @@
     <div class="row g-5">
       <div class="col-md-8" id="mailContent">
         <div class="p-4 mb-3 bg-body-tertiary rounded">
-          <p >HUMANIST Reaserch offers a search through the archives of the Humanist Discussion Group. The data is based on all emails from 1987 to 2018.
+          <p >HUMANIST Research offers a search through the archives of the Humanist Discussion Group. The data is based on all emails from 1987 to 2018.
               The search form offers the possibility to search for text content, categories of email topics and years. These options can also be used in combination. However, at least one must be selected. In the case of “To Year”, “From Year” must also be selected.
               The graph at the bottom shows either the number of emails searched for by year or by time zone. <br><br> There are currently no search results.
             Please fill in the search form and click on "Search".</p>
@@ -168,6 +168,7 @@
                     </label>
                   </div>
                   <div class="form-check">
+                  <input type="hidden" id="pageIndex" name="pageIndex" value="0">
                     <input class="form-check-input" type="radio" name="graphRadio" id="radioTimezones" value="radioTimezones">
                     <label class="form-check-label" for="radioTimezones">
                       Graph: Timezones
@@ -191,6 +192,7 @@
   </footer>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="../JS/ajax.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
     
 </html>
