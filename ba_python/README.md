@@ -10,4 +10,9 @@ Set-ExecutionPolicy Unrestricted -Scope Process
 3. Install packages
 ```
 python -m pip install -r requirements.txt
+
+python -m pip install pandas
+
+python -m pip install -q google-generativeai
+
 ```

@@ -1,7 +1,7 @@
-
+// JQery Ajax
 $(document).ready(function() {
     $("#searchForm").off("submit");
-
+    // If Submit is clicked get Values and load load-mailcontent.php in div container
     $("#searchForm").submit(function(event) {
 
         if (event.originalEvent) {
@@ -27,7 +27,7 @@ $(document).ready(function() {
                 submit: submit
             });
     });
-
+    // if Buttons Next | Previous are clicked --> change value if Pageindex and trigger Button Submit
     $("#next").click(function() {
         var value =  parseInt($("#pageIndex").val()) + 10;
         $("#pageIndex").val(value);
@@ -47,17 +47,3 @@ $(document).ready(function() {
     });
 
 });
-
-/*
-
-We can also trigger the event when a different element is clicked:
-$( "#other" ).on( "click", function() {
-  $( "#target" ).trigger( "click" );
-} );
-
- 	
-The event handler can be bound to any <div>:
-$( "#target" ).on( "click", function() {
-  alert( "Handler for `click` called." );
-} );
-*/

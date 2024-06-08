@@ -1,3 +1,4 @@
+<!-- Databse Connection -->
 <?php
     $servername = "localhost";
     $username = "root";
